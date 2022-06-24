@@ -6,13 +6,13 @@ OBJDUMP	= $(PREFIX)-objdump
 GDB		= $(PREFIX)-gdb
 OPENCM3_DIR =../libopencm3
 
-GMP_DIR=./gmp-6.2.1/
-GMP_LIB=$(GMP_DIR)/.libs/libgmp.a
-
 
 DEVICE=stm32f207zg
 LIBNAME= opencm3_stm32f2
 ARCH_FLAGS = -mthumb -mcpu=cortex-m3
+
+GMP_DIR=./gmp-6.2.1/
+GMP_LIB=$(GMP_DIR)/.libs/libgmp.a
 
 DEFINES=-DSTM32F2 -DSTM32F207ZG
 
@@ -24,7 +24,8 @@ CFLAGS		+= -O3\
 		   -I$(GMP_DIR) \
 		   -fno-common $(ARCH_FLAGS) -MD $(DEFINES)
 
-LDSCRIPT = $(DEVICE).ld
+DEVICES_DATA = $(OPENCM3_DIR)/ld/devices.data
+LDSCRIPT = stm32f207zg.ld
 
 LDLIBS += -l$(LIBNAME)
 LIBDEPS += $(OPENCM3_DIR)/lib/lib$(LIBNAME).a
@@ -39,40 +40,26 @@ LDFLAGS += \
 	-T$(LDSCRIPT) \
 	$(ARCH_FLAGS)
 
-OBJS=hal-opencm3.o test.o mont_mul.o randombytes.o gmpwrap.o schoolbook_mulmod.o tbl_lookup.o
+OBJS_MLA=hal-opencm3.o test.o hensel.o hensel32.o arith.S mla.o mla-low.o
+OBJS_UMLAL=hal-opencm3.o test.o hensel.o hensel32.o arith.S umlal.o umlal-low.o
 
-all: 2048/test.bin 4096/test.bin
-OBJS_2048=$(patsubst %.o,2048/%.o, $(OBJS))
-OBJS_4096=$(patsubst %.o,4096/%.o, $(OBJS))
+all: mla.bin umlal.bin
 
 
 %.bin: %.elf
 	$(OBJCOPY) -Obinary $(*).elf $(*).bin
 
-2048/%.elf: 2048/%.o $(OBJS_2048) $(LDSCRIPT) $(GMP_LIB)
-	mkdir -p 2048/
-	$(LD) -o $@ $(OBJS_2048) $(LDFLAGS) -l$(LIBNAME)
+mla.elf: $(OBJS_MLA) $(LDSCRIPT) $(GMP_LIB)
+	$(LD) -o $@ $(OBJS_MLA) $(LDFLAGS) -l$(LIBNAME)
 
-4096/%.elf: 4096/%.o $(OBJS_4096) $(LDSCRIPT) $(GMP_LIB)
-	mkdir -p 4096/
-	$(LD) -o $@ $(OBJS_4096) $(LDFLAGS) -l$(LIBNAME)
+umlal.elf: $(OBJS_UMLAL) $(LDSCRIPT) $(GMP_LIB)
+	$(LD) -o $@ $(OBJS_UMLAL) $(LDFLAGS) -l$(LIBNAME)
 
-2048/%.o: %.c $(GMP_LIB)
-	mkdir -p 2048/
-	$(CC) -DNBITS=2048 $(CFLAGS) -o $@ -c $<
+%.o: %.c $(GMP_LIB)
+	$(CC) $(CFLAGS) -o $@ -c $<
 
-4096/%.o: %.c $(GMP_LIB)
-	mkdir -p 4096/
-	$(CC) -DNBITS=4096  $(CFLAGS) -o $@ -c $<
-
-2048/%.o: %.S
-	mkdir -p 2048/
-	$(CC) -DNBITS=2048 $(CFLAGS) -o $@ -c $<
-
-4096/%.o: %.S
-	mkdir -p 4096/
-	$(CC) -DNBITS=4096  $(CFLAGS) -o $@ -c $<
-
+%.o: %.S
+	$(CC) $(CFLAGS) -o $@ -c $<
 
 $(GMP_LIB):
 	@if [ ! "`ls -A $(GMP_DIR)`" ] ; then \
@@ -91,5 +78,6 @@ $(GMP_LIB):
 clean:
 	find . -name \*.o -type f -exec rm -f {} \;
 	find . -name \*.d -type f -exec rm -f {} \;
-	rm -f *.elf */*.elf
-	rm -f *.bin */*.bin
+	rm -f *.elf
+	rm -f *.bin
+	rm -rf obj/

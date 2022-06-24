@@ -102,11 +102,11 @@ flash-4096: 4096/test.bin
 	mkdir -p 4096/
 	$(LD) -o $@ $(OBJS_4096) $(LDFLAGS) -l$(LIBNAME)
 
-2048/%.o: %.c $(HEADERS)
+2048/%.o: %.c $(HEADERS) $(GMP_LIB)
 	mkdir -p 2048/
 	$(CC) -DNBITS=2048 $(CFLAGS) -o $@ -c $<
 
-4096/%.o: %.c $(HEADERS)
+4096/%.o: %.c $(HEADERS) $(GMP_LIB)
 	mkdir -p 4096/
 	$(CC) -DNBITS=4096 $(CFLAGS) -o $@ -c $<
 
@@ -132,11 +132,11 @@ asm/%.o: asm/%.S $(HEADERS)
 	mkdir -p 4096/
 	$(CC) -DNBITS=4096 $(CFLAGS) -o $@ -c $<
 
-2048/tbl_lookup.o: tbl_lookup.S $(HEADERS)
+2048/tbl_lookup.o: tbl_lookup.S $(HEADERS) $(GMP_LIB)
 	mkdir -p 2048/
 	$(CC) -DNBITS=2048 $(CFLAGS) -o $@ -c $<
 
-4096/tbl_lookup.o: tbl_lookup.S $(HEADERS)
+4096/tbl_lookup.o: tbl_lookup.S $(HEADERS) $(GMP_LIB)
 	mkdir -p 4096/
 	$(CC) -DNBITS=4096 $(CFLAGS) -o $@ -c $<
 
