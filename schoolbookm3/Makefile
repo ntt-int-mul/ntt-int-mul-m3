@@ -46,6 +46,12 @@ OBJS_2048=$(patsubst %.o,2048/%.o, $(OBJS))
 OBJS_4096=$(patsubst %.o,4096/%.o, $(OBJS))
 
 
+.PHONY: flash-2048 flash-4096
+flash-2048: 2048/test.bin
+	st-flash write 2048/test.bin 0x8000000
+flash-4096: 4096/test.bin
+	st-flash write 4096/test.bin 0x8000000
+
 %.bin: %.elf
 	$(OBJCOPY) -Obinary $(*).elf $(*).bin
 

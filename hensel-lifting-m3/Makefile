@@ -46,6 +46,13 @@ OBJS_UMLAL=hal-opencm3.o test.o hensel.o hensel32.o arith.S umlal.o umlal-low.o
 all: mla.bin umlal.bin
 
 
+.PHONY: flash-mla flash-umlal
+flash-mla: mla.bin
+	st-flash write mla.bin 0x8000000
+flash-umlal: umlal.bin
+	st-flash write umlal.bin 0x8000000
+
+
 %.bin: %.elf
 	$(OBJCOPY) -Obinary $(*).elf $(*).bin
 
