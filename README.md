@@ -33,3 +33,6 @@ For flashing binaries, we use [st-link](https://github.com/stlink-org/stlink).
 - [`intmulm3`](./intmulm3/) contains the NTT-based integer multiplier. Refer to the [README.md](./intmulm3/README.md)
 - [`schoolbookm3`](./schoolbookm3/) contains the schoolbook multiplier for reference. Refer to the [README.md](./schoolbookm3/README.md)
 - [`hensel-lifting-m3`](./hensel-lifting-m3/) contains Hensel lifting. Refer to the [README.md](./hensel-lifting-m3/README.md)
+
+# License
+All files in this repository are published under a [CC0 copyright-waiver](https://creativecommons.org/share-your-work/public-domain/cc0/).
