@@ -69,7 +69,7 @@ $(GMP_LIB):
 		printf "\t$$ wget https://gmplib.org/download/gmp/gmp-6.2.1.tar.lz\n"; \
 		printf "\t$$ tar -xf gmp-6.2.1.tar.lz\n"; \
 		printf "\t$$ cd gmp-6.2.1\n"; \
-		printf "\t$$ ./configure CC=arm-none-eabi-gcc CFLAGS="-nostartfiles --specs=nosys.specs -mcpu=cortex-m3 -O3" --host=arm-none-eabi --disable-assembly\n"; \
+		printf '\t$$ ./configure CC=arm-none-eabi-gcc CFLAGS="-nostartfiles --specs=nosys.specs -mcpu=cortex-m3 -Os" --host=arm-none-eabi --disable-assembly\n'; \
 		printf "\t$$ make\n"; \
 		printf "\tbefore running make.\n"; \
 		exit 1; \
